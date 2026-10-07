@@ -6,6 +6,9 @@ on:
 
 jobs:
 
+  # -------------------------
+  # TEST DE L'APPLICATION
+  # -------------------------
   test:
     name: Test CyberLab
     runs-on: ubuntu-latest
@@ -22,10 +25,12 @@ jobs:
       - name: Installer les dépendances
         run: pip install -r requirements.txt
 
-      - name: Vérifier l'application
+      - name: Vérifier le code Python
         run: python -m py_compile app.py
 
-
+  # -------------------------
+  # ANALYSE CODEQL
+  # -------------------------
   codeql:
     name: Analyse CodeQL
     runs-on: ubuntu-latest
@@ -47,3 +52,24 @@ jobs:
 
       - name: Analyse CodeQL
         uses: github/codeql-action/analyze@v3
+        
+  # SCAN DOCKER=> TRIVYy
+  trivy:
+    name: Scan Docker avec Trivy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Construire l'image Docker
+        run: docker build -t cyberlab:latest .
+
+      - name: Scanner l'image avec Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "cyberlab:latest"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
