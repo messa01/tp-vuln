@@ -5,6 +5,7 @@ on:
   pull_request:
 
 jobs:
+
   test:
     name: Test CyberLab
     runs-on: ubuntu-latest
@@ -24,5 +25,25 @@ jobs:
       - name: Vérifier l'application
         run: python -m py_compile app.py
 
-      - name: Pipeline terminé
-        run: echo "CyberLab fonctionne correctement !"
+
+  codeql:
+    name: Analyse CodeQL
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Initialiser CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+
+      - name: Analyse CodeQL
+        uses: github/codeql-action/analyze@v3
