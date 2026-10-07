@@ -1,0 +1,28 @@
+name: CyberLab Security Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Test CyberLab
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Vérifier l'application
+        run: python -m py_compile app.py
+
+      - name: Pipeline terminé
+        run: echo "CyberLab fonctionne correctement !"
